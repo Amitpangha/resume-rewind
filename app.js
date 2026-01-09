@@ -74,27 +74,44 @@ document.getElementById('newAnalysisBtn').addEventListener('click', () => {
     charCount.textContent = '0';
 });
 
-// Show analysis results
-function showAnalysisResult(resumeText) {
-    document.getElementById('loadingSection').classList.add('hidden');
-    document.getElementById('resultSection').classList.remove('hidden');
-    
-    // Calculate a "score" based on text length and content (simulated)
-    const score = calculateSimulatedScore(resumeText);
-    document.getElementById('scoreDisplay').textContent = `${score}/100`;
-    
-    // Generate simulated analysis
-    const analysisHTML = generateSimulatedAnalysis(resumeText, score);
-    document.getElementById('analysisResult').innerHTML = analysisHTML;
-    
-    // Send analytics to your backend
-    tg.sendData(JSON.stringify({
-        action: 'analysis_completed',
-        userId: tg.initDataUnsafe.user?.id,
-        score: score,
-        length: resumeText.length
-    }));
+async function analyzeWithAI(resumeText) {
+    try {
+        const response = await fetch('https://your-backend.up.railway.app/analyze', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: resumeText })
+        });
+        
+        const data = await response.json();
+        return data.analysis;
+    } catch (error) {
+        console.error('AI Analysis failed:', error);
+        return null;
+    }
 }
+
+// Then modify the button click handler to use real AI
+document.getElementById('analyzeBtn').addEventListener('click', async () => {
+    const text = resumeText.value.trim();
+    
+    if (text.length < 50) {
+        alert('Please paste a longer resume (at least 50 characters) for accurate analysis.');
+        return;
+    }
+    
+    document.getElementById('mainApp').classList.add('hidden');
+    document.getElementById('loadingSection').classList.remove('hidden');
+    
+    // Use real AI analysis
+    const analysis = await analyzeWithAI(text);
+    
+    if (analysis) {
+        showRealAnalysisResult(analysis);
+    } else {
+        // Fallback to simulated
+        showAnalysisResult(text);
+    }
+});
 
 // Simulated scoring algorithm
 function calculateSimulatedScore(text) {
@@ -178,4 +195,5 @@ tg.BackButton.onClick(() => {
         document.getElementById('resultSection').classList.add('hidden');
         document.getElementById('mainApp').classList.remove('hidden');
     }
+
 });
