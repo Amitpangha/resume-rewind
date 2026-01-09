@@ -92,7 +92,7 @@ function initializeApp(tg) {
         premiumBtn.addEventListener('click', function() {
             console.log("Premium button clicked");
             // Test Stripe link (replace with your actual Stripe link later)
-            const testStripeLink = 'https://buy.stripe.com/test_00g5nP6jF1m7b5O3cc';
+            const testStripeLink = 'https://buy.stripe.com/test_6oU14m1Fa4Ra74y8LZdjO00';
             
             if (tg) {
                 tg.showAlert('Opening secure payment page...');
@@ -311,3 +311,4 @@ setTimeout(function() {
         initializeApp(null);
     }
 }, 3000);
+
